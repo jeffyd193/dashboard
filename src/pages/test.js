@@ -1,16 +1,18 @@
 import React from "react";
 
-import { collection, getDocs } from 'firebase/firestore/lite';
-import { firebaseConfig, db } from "../GoogleAuth/firebase";
+import { db } from "../GoogleAuth/firebase";
 import { uid } from 'uid';
-import { set, ref, onValue, remove } from "firebase/database";
+import { set, ref, onValue, remove, update } from "firebase/database";
 import { useState, useEffect } from 'react';
 
 
   const Test = () => {
    
     const [clientName, setClientName] = useState("");
-    const [clientNames, setClientNames] = useState([])
+    const [clientNames, setClientNames] = useState([]);
+    const [isEdit, setIsEdit] = useState(false);
+    const [tempUuid, setTempUuid] = useState("");
+
 
     const handleClientNameChange = (e) => {
         
@@ -26,10 +28,6 @@ import { useState, useEffect } from 'react';
 
         setClientName("");
     }
-    // Warning: Maximum update depth exceeded.
-    // This can happen when a component calls setState inside useEffect,
-    // but useEffect either doesn't have a dependency array,
-    // or one of the dependencies changes on every render.
     
     //read
     useEffect(()=> {
@@ -43,6 +41,20 @@ import { useState, useEffect } from 'react';
 
 
     //update
+    const handleUpdate = (clientName) => {
+        setIsEdit(true);
+        setTempUuid(clientName.uuid);
+        setClientName(clientName.name);
+    }
+
+    const handleSubmitChange = () => {
+        update(ref(db, `/${tempUuid}`), {
+            name: clientName,
+            uuid: tempUuid,
+        });
+        setClientName("");
+        setIsEdit(false);
+    }
     
     //delete
     const handleDelete = (clientName) => {
@@ -57,21 +69,38 @@ import { useState, useEffect } from 'react';
             <form>
             <div> {/**Create Client in database */}
                 <input type='text' value={clientName} onChange={handleClientNameChange} required />
-                <button 
-                className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
-                    disabled={!clientName} 
-                    onClick={createClient} 
-                    type="submit" 
-                    >Submit
-                </button>
+                {isEdit ? (
+                    <>
+                    <button 
+                        className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
+                        disabled={!clientName} 
+                        onClick={handleSubmitChange} 
+                        type="submit" 
+                        >Submit Change
+                    </button>
+                    <button onClick={()=> {
+                        setIsEdit(false);
+                        setClientName("");
+                        }}>X</button>
+                    </>
+                ) : (
+                    <button 
+                    className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
+                        disabled={!clientName} 
+                        onClick={createClient} 
+                        type="submit" 
+                        >Submit
+                    </button>
+                )}
             </div>
             </form>
             {/* Read client from database */}
             {clientNames.map((clientName) => (
                 <>
-                    <h1>{clientName.name}</h1>
+                    <h1 key={clientName.uuid}>{clientName.name}</h1>
                     <button
                     className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
+                    onClick={() => handleUpdate(clientName)}
                     >Update</button>
                     <button
                         className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
