@@ -32,19 +32,18 @@ import { useState, useEffect } from 'react';
     // or one of the dependencies changes on every render.
     
     //read
-
     useEffect(()=> {
         onValue(ref(db), snapshot => {
-            setClientNames([]);
             const data = snapshot.val();
             if(data !== null){
-                Object.values(data).map(clientName => {
-                    setClientNames(oldArray => [...oldArray, clientName])
-                })
+                setClientNames(Object.values(data))
             }
-        }, [])
-    })
+        })
+    }, [])
+
+
     //update
+    
     //delete
     const handleDelete = (clientName) => {
         remove(ref(db, `/${clientName.uuid}`));
