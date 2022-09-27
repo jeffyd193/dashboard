@@ -6,7 +6,7 @@ import { getDatabase } from 'firebase/database'
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyAM_JZkrVrZcSRkRWd6beCguFPovhoSE0w",
+  apiKey: "api-key goes here",
   authDomain: "lab-7e60e.firebaseapp.com",
   projectId: "lab-7e60e",
   storageBucket: "lab-7e60e.appspot.com",

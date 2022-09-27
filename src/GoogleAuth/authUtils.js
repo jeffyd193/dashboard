@@ -1,5 +1,5 @@
 const initAuth = () => {
-  const CLIENT_ID = '599585600432-m1ltja580eq0hnv50ef76qm5se7u3g9q.apps.googleusercontent.com';
+  const CLIENT_ID = 'client secret goes here';
   return window.gapi.auth2.init({
     client_id: CLIENT_ID,
     scope: "https://www.googleapis.com/auth/analytics.readonly",
